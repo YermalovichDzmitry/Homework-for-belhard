@@ -10,7 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(30))
     fullname = Column(String)
-    gender = Column(String)
+    gender = Column(String(10))
     age = Column(Integer)
     addresses = relationship("Address", back_populates="user")
 
