@@ -53,7 +53,8 @@ def merge_users_all(users: dict, albums: dict, todos: dict, posts: dict):
     return new_users
 
 
-async def get_data():
+# Асинхронная выгрузка
+async def get_data_not_sync():
     data = await asyncio.gather(
         make_request("users"),
         make_request("albums"),
@@ -67,9 +68,30 @@ async def get_data():
     return users, albums, photos, comments, todos, posts
 
 
+# Синхронная выгрузка
+async def get_data_sync():
+    users = await make_request("users")
+    albums = await make_request("albums")
+    photos = await make_request("photos")
+    comments = await make_request("comments")
+    todos = await make_request("todos")
+    posts = await make_request("posts")
+    json_data = [json.loads(item) for item in [users, albums, photos, comments, todos, posts]]
+    users, albums, photos, comments, todos, posts = json_data
+    return users, albums, photos, comments, todos, posts
+
+
 start = time.time()
-users, albums, photos, comments, todos, posts = asyncio.run(get_data())
+users, albums, photos, comments, todos, posts = asyncio.run(get_data_not_sync())
 print(time.time() - start)
+
+# start = time.time()
+# users, albums, photos, comments, todos, posts = asyncio.run(get_data_sync())
+# print(time.time() - start)
+
+'''
+Асинхронная выгрузка выгружает данные быстрее чем синхронная.
+'''
 
 albums_with_photos = merge_albums_photos(albums, photos)
 posts_with_comments = merge_posts_comments(posts, comments)
