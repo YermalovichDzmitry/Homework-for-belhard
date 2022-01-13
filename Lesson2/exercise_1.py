@@ -5,13 +5,13 @@ second_line_of_legs = "30 20 24 5"
 first_legs = first_line_of_legs.split()
 second_legs = second_line_of_legs.split()
 
-first_second_legs = [(int(first_legs[i]), int(second_legs[i])) for i in range(len(first_legs))]
+first_second_legs = list(zip(first_legs, second_legs))
 
 
 def output(tuple_legs):
-    for index, item in enumerate(tuple_legs, 1):
-        a = item[0]
-        b = item[1]
+    for index, (a, b) in enumerate(tuple_legs, 1):
+        a = int(a)
+        b = int(b)
         S = a * b * 0.5
         c = math.sqrt(a ** 2 + b ** 2)
         print(

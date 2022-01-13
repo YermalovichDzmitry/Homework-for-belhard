@@ -73,23 +73,15 @@ print(f"Number of all people = {number_of_all_people}")
 count_male = 0
 count_female = 0
 numbers_of_adults = 0
-# Первый способ
-for person in persons:
-    if person.get("gender") == "male":
-        count_male += 1
-    elif person.get("gender") == "female":
-        count_female += 1
-    if int(person.get("age")) >= 18:
-        numbers_of_adults += 1
 
+male_female = [person.get("gender") for person in persons]
+counter = collections.Counter(male_female)
+count_male = counter["male"]
+count_female = counter["female"]
+adults = [person for person in persons if int(person.get("age")) > 18]
+numbers_of_adults = len(adults)
 print(f"Numbers of men {count_male} and women {count_female}")
 print(f"Numbers of adults {numbers_of_adults}")
-# Второй способ
-male_female = [person.get("gender") for person in persons]
-count_male = male_female.count("male")
-count_female = male_female.count("female")
-
-print(f"Numbers of men {count_male} and women {count_female}")
 # Список всех имен
 names = [person.get("name") for person in persons]
 print(f"Names : {names}")
@@ -110,7 +102,8 @@ def key(item):
 name_times_tuple.sort(key=key, reverse=True)
 top_3 = [name for name, times in name_times_tuple[0:3]]
 print(f"The three most common names : {top_3}")
-# Вывести все имена мужчин старше 35, имя которых начинается с F
+# Вывести все имена мужчин старше 35, имя которых начинается с F,
 names_male_greater_than_35_f = [person.get("name") for person in persons if
-                           int(person.get("age")) > 35 and person.get("name").startswith('F')]
+                                int(person.get("age")) > 35 and person.get("name").startswith('F') and person.get(
+                                    "gender") == "male"]
 print(f"Names of men over 35 and names beginning with the letter 'F' : {names_male_greater_than_35_f}")
