@@ -1,5 +1,5 @@
 import math
-from abc import abstractmethod, ABC
+from abc import ABC, abstractproperty
 
 
 class Point:
@@ -18,11 +18,11 @@ class Line:
 
 
 class Shape(ABC):
-    @abstractmethod
+    @abstractproperty
     def area(self):
         pass
 
-    @abstractmethod
+    @abstractproperty
     def perimeter(self):
         pass
 
@@ -34,25 +34,27 @@ class Square(Line, Shape):
 
     @property
     def area(self) -> float:
+        self.side = super().length()
         return self.side ** 2
 
     @property
     def perimeter(self) -> float:
+        self.side = super().length()
         return self.side * 4
 
 
 class Rect(Shape):
-    def __init__(self, a, b):
-        self.a = a
-        self.b = b
+    def __init__(self, x1, y1, x2, y2, x3, y3, x4, y4):
+        self.a = Line(x1, y1, x2, y2)
+        self.b = Line(x3, y3, x4, y4)
 
     @property
     def area(self) -> float:
-        return self.a * self.b
+        return self.a.length() * self.b.length()
 
     @property
     def perimeter(self) -> float:
-        return 2 * (self.a + self.b)
+        return 2 * (self.a.length() + self.b.length())
 
 
 class Cube(Square):
@@ -70,7 +72,7 @@ print(f"Сube edge = {cube.side}")
 print(f"Сube face area = {cube.area}")
 print(f"Сube face perimeter = {cube.perimeter}")
 
-rect = Rect(4, 5)
+rect = Rect(0, 0, 0, 4, 0, 0, 0, 5)
 print("=" * 100)
 print(f"Perimeter of the rectangle = {rect.perimeter}")
 print(f"Area of the rectangle = {rect.area}")
