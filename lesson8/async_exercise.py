@@ -3,6 +3,7 @@ import json
 import time
 import asyncio
 import aiohttp
+import argparse
 
 
 async def make_request(resource):
@@ -14,10 +15,10 @@ async def make_request(resource):
 def merge_albums_photos(albums: dict, photos: dict):
     new_albums = []
     for album in albums:
-        album.update({'list of photos': []})
+        album.update({'photos': []})
         for photo in photos:
             if photo.get('albumId') == album.get('id'):
-                album['list of photos'].append(photo)
+                album['photos'].append(photo)
         new_albums.append(album)
 
     return new_albums
@@ -26,10 +27,10 @@ def merge_albums_photos(albums: dict, photos: dict):
 def merge_posts_comments(posts: dict, comments: dict):
     new_posts = []
     for post in posts:
-        post.update({'list of comments': []})
+        post.update({'comments': []})
         for comment in comments:
             if comment.get('postId') == post.get('id'):
-                post['list of comments'].append(comment)
+                post['comments'].append(comment)
         new_posts.append(post)
     return new_posts
 
@@ -37,18 +38,18 @@ def merge_posts_comments(posts: dict, comments: dict):
 def merge_users_all(users: dict, albums: dict, todos: dict, posts: dict):
     new_users = []
     for user in users:
-        user.update({'list of albums': []})
-        user.update({'list of todos': []})
-        user.update({'list of posts': []})
+        user.update({'albums': []})
+        user.update({'todos': []})
+        user.update({'posts': []})
         for album in albums:
             if album.get('userId') == user.get('id'):
-                user['list of albums'].append(album)
+                user['albums'].append(album)
         for todo in todos:
             if todo.get('userId') == user.get('id'):
-                user['list of todos'].append(todo)
+                user['todos'].append(todo)
         for post in posts:
             if post.get('userId') == user.get('id'):
-                user['list of posts'].append(post)
+                user['posts'].append(post)
         new_users.append(user)
     return new_users
 
@@ -81,6 +82,25 @@ async def get_data_sync():
     return users, albums, photos, comments, todos, posts
 
 
+def get_data(request, data):
+    request = request.split("/")
+    request = request[1:]
+    if len(request) == 1 and request[0] == "users":
+        print(data)
+        return 0
+    elif request[0] == "users":
+        data = data[int(request[1]) - 1]
+        print(data[request[2]])
+        return 0
+    else:
+        for user in data:
+            for item in user[request[0]]:
+                if item['id'] == int(request[1]):
+                    print(item[request[2]])
+
+        return 0
+
+
 start = time.time()
 users, albums, photos, comments, todos, posts = asyncio.run(get_data_not_sync())
 print(time.time() - start)
@@ -92,7 +112,11 @@ print(time.time() - start)
 '''
 Асинхронная выгрузка выгружает данные быстрее чем синхронная.
 '''
+parser = argparse.ArgumentParser()
+parser.add_argument('path', type=str)
+args = parser.parse_args()
 
 albums_with_photos = merge_albums_photos(albums, photos)
 posts_with_comments = merge_posts_comments(posts, comments)
 update_users = merge_users_all(users, albums_with_photos, todos, posts_with_comments)
+get_data(args.path, update_users)
